@@ -69,6 +69,8 @@ export default class SandBox {
     this.proxyWindow = new Proxy(this.microWindow, {
       // 取值
       get: (target, key) => {
+
+        // console.log('KEY',key)
         // 优先从代理对象上取值
         if (Reflect.has(target, key)) {
           return Reflect.get(target, key)
@@ -77,6 +79,7 @@ export default class SandBox {
         // 否则兜底到window对象上取值
         const rawValue = Reflect.get(window, key)
 
+        
         // 如果兜底的值为函数，则需要绑定window对象，如：console、alert等
         if (typeof rawValue === 'function') {
           const valueStr = rawValue.toString()

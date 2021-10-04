@@ -20,7 +20,9 @@ export default function loadHtml (app) {
     htmlDom.innerHTML = html
     console.log('html:', htmlDom)
 
-    // 进一步提取和处理js、css等静态资源
+    // // 进一步提取和处理js、css等静态资源
+    // 提取 script link 和 style
+    // script 和 link 远程绝对路径获取，style 进行隔离处理
     extractSourceDom(htmlDom, app)
 
     // 获取micro-app-head元素
@@ -56,8 +58,11 @@ export default function loadHtml (app) {
     extractSourceDom(child, app)
   })
 
+  // console.log('children ------ ',children)
   for (const dom of children) {
+    // console.log('children ------ ',children)
     if (dom instanceof HTMLLinkElement) {
+      console.log('HTMLLinkElement ------ ',dom)
       // 提取css地址
       const href = dom.getAttribute('href')
       if (dom.getAttribute('rel') === 'stylesheet' && href) {
@@ -69,9 +74,11 @@ export default function loadHtml (app) {
       // 删除原有元素
       parent.removeChild(dom)
     } else if (dom instanceof HTMLStyleElement) {
+      console.log('HTMLStyleElement ------ ',dom)
       // 执行样式隔离
       scopedCSS(dom, app.name)
     } else if (dom instanceof HTMLScriptElement) {
+      console.log('HTMLScriptElement ------ ',dom)
       // 并提取js地址
       const src = dom.getAttribute('src')
       if (src) { // 远程script
@@ -103,7 +110,7 @@ export default function loadHtml (app) {
   // 通过fetch请求所有css资源
   const fetchLinkPromise = []
   for (const [url] of linkEntries) {
-    fetchLinkPromise.push(fetchSource(url))
+    fetchLinkPromise.push(fetchSource(app.url+url))
   }
 
   Promise.all(fetchLinkPromise).then((res) => {
@@ -132,11 +139,13 @@ export default function loadHtml (app) {
  */
  export function fetchScriptsFromHtml (app, htmlDom) {
   const scriptEntries = Array.from(app.source.scripts.entries())
+
+  console.log('scriptEntries:',scriptEntries)
   // 通过fetch请求所有js资源
   const fetchScriptPromise = []
   for (const [url, info] of scriptEntries) {
     // 如果是内联script，则不需要请求资源
-    fetchScriptPromise.push(info.code ? Promise.resolve(info.code) :  fetchSource(url))
+    fetchScriptPromise.push(info.code ? Promise.resolve(info.code) :  fetchSource(app.url+url))
   }
 
   Promise.all(fetchScriptPromise).then((res) => {

@@ -11,15 +11,18 @@ class MyElement extends HTMLElement {
   }
 
   connectedCallback () {
-    // 创建微应用实例
+
+    
     const app = new CreateApp({
       name: this.name,
       url: this.url,
       container: this,
     })
-
+    // return
     // 记入缓存，用于后续功能
     appInstanceMap.set(this.name, app)
+
+
   }
 
   disconnectedCallback () {
@@ -27,6 +30,7 @@ class MyElement extends HTMLElement {
     const app = appInstanceMap.get(this.name)
     // 如果有属性destory，则完全卸载应用包括缓存的文件
     app.unmount(this.hasAttribute('destory'))
+
   }
 
   attributeChangedCallback (attrName, oldVal, newVal) {

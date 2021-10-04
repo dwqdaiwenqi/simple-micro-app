@@ -4,6 +4,7 @@ import Sandbox from './sandbox'
 // 微应用实例
 export const appInstanceMap = new Map()
 
+
 // 创建微应用
 export default class CreateApp {
   constructor ({ name, url, container }) {
@@ -25,6 +26,9 @@ export default class CreateApp {
 
   // 资源加载完时执行
   onLoad (htmlDom) {
+
+    console.log('onload!')
+
     this.loadCount = this.loadCount ? this.loadCount + 1 : 1
     // 第二次执行且组件未卸载时执行渲染
     if (this.loadCount === 2 && this.status !== 'unmount') {
@@ -40,7 +44,9 @@ export default class CreateApp {
    */
   mount () {
     // 克隆DOM节点
-    const cloneHtml = this.source.html.cloneNode(true)
+    const cloneHtml = this.source.html.cloneNode(true) // 
+
+    console.log('cloneHtml',cloneHtml)
     // 创建一个fragment节点作为模版，这样不会产生冗余的元素
     const fragment = document.createDocumentFragment()
     Array.from(cloneHtml.childNodes).forEach((node) => {
@@ -51,12 +57,14 @@ export default class CreateApp {
     this.container.appendChild(fragment)
 
     this.sandbox.start(this.name)
-    // 执行js
+
+    // // 执行js
     this.source.scripts.forEach((info) => {
       (0, eval)(this.sandbox.bindScope(info.code))
     })
 
-    // 标记应用为已渲染
+
+    // // 标记应用为已渲染
     this.status = 'mounted'
   }
 

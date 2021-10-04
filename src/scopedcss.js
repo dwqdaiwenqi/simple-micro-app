@@ -10,6 +10,8 @@ export default function scopedCSS (styleElement, appName) {
   // 前缀
   const prefix = `micro-app[name=${appName}]`
 
+  console.log('prefix',prefix)
+
   // 初始化时创建模版标签
   if (!templateStyle) {
     templateStyle = document.createElement('style')
@@ -46,6 +48,8 @@ export default function scopedCSS (styleElement, appName) {
  */
  function scopedRule (rules, prefix) {
   let result = ''
+
+  console.log('rules',rules)
   // 遍历rules，处理每一条规则
   for (const rule of rules) {
     switch (rule.type) {
@@ -63,6 +67,7 @@ export default function scopedCSS (styleElement, appName) {
         break
     }
   }
+  console.log('result',result)
 
   return result
 }
